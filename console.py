@@ -23,6 +23,7 @@ class HBNBCommand(cmd.Cmd):
                'State': State, 'City': City, 'Amenity': Amenity,
                'Review': Review
               }
+    
     dot_cmds = ['all', 'count', 'show', 'destroy', 'update']
     types = {
              'number_rooms': int, 'number_bathrooms': int,
@@ -115,16 +116,44 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
+         
         if not args:
             print("** class name missing **")
-            return
-        elif args not in HBNBCommand.classes:
+        #------
+        parameters = args.split(" ")
+        if parameters[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        new_instance = HBNBCommand.classes[args]()
+        
+        kwargs = {}
+        for param in parameters[1:]:
+            key, value = param.split("=")
+            if value[0] == '"':
+                value = value.strip('"').replace("_", " ")
+            
+            try:
+                float(value)
+            except ValueError:
+                pass
+            try:
+                int(value)
+            except ValueError:
+                pass
+            kwargs[key] = value
+            
+           
+        if kwargs == {}:
+            new_instance = eval(parameters[0])(**kwargs)
+            storage.new(new_instance)
+            print(new_instance.id)
+        # ------
+
+        new_instance = HBNBCommand.classes[parameters[0]]()
         storage.save()
         print(new_instance.id)
         storage.save()
+            
+
 
     def help_create(self):
         """ Help information for the create method """
