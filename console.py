@@ -4,6 +4,7 @@ import cmd
 import sys
 from models.base_model import BaseModel
 from models.__init__ import storage
+from models.engine.file_storage import FileStorage
 from models.user import User
 from models.place import Place
 from models.state import State
@@ -38,7 +39,6 @@ class HBNBCommand(cmd.Cmd):
 
     def precmd(self, line):
         """Reformat command line for advanced command syntax.
-
         Usage: <class name>.<command>([<id> [<*args> or <**kwargs>]])
         (Brackets denote optional fields in usage example.)
         """
@@ -123,14 +123,15 @@ class HBNBCommand(cmd.Cmd):
         parameters = args.split(" ")
         if parameters[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
+            print(parameters[0])
             return
-        
+        new_instance = HBNBCommand.classes[parameters[0]]()
         kwargs = {}
         for param in parameters[1:]:
             key, value = param.split("=")
             if value[0] == '"':
                 value = value.strip('"').replace("_", " ")
-            
+            setattr(new_instance, key, value)
             try:
                 float(value)
             except ValueError:
@@ -139,19 +140,10 @@ class HBNBCommand(cmd.Cmd):
                 int(value)
             except ValueError:
                 pass
-            kwargs[key] = value
-            
            
-        if kwargs == {}:
-            new_instance = eval(parameters[0])(**kwargs)
-            storage.new(new_instance)
-            print(new_instance.id)
-        # ------
-
-        new_instance = HBNBCommand.classes[parameters[0]]()
-        storage.save()
+        new_instance.save()
         print(new_instance.id)
-        storage.save()
+        #----
             
 
 
