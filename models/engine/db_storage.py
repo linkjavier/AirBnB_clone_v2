@@ -26,9 +26,9 @@ class DBStorage:
         host = os.getenv("HBNB_MYSQL_HOST")
         db = os.getenv("HBNB_MYSQL_DB")
         self.__engine = create_engine("mysql+mysqldb://{}:{}@{}/{}"
-                                      .format(user, pswd, host, db),
+                                      .format(user, password, host, db),
                                       pool_pre_ping=True)
-        Base.metadata.create_all(self._engine)
+        Base.metadata.create_all(self.__engine)
         if os.getenv("HBNB_ENV") == "test":
             Base.metadata.drop_all(bind=self.__engine)
 
@@ -49,7 +49,7 @@ class DBStorage:
                 database_dic[key] = objs
         return database_dic
             
-    def new(self obj):
+    def new(self, obj):
         """ adds the object to the current database session """
         self.__session.add(obj)
 
@@ -75,11 +75,11 @@ class DBStorage:
             must be set to False ; and scoped_session - \
             to make sure your Session is thread-safe"""
 
-            Base.metadata.create_all(self._engine)
-            session = sessionmaker(bind=self.__engine,
-                                   expire_on_commit=False)
-            Session = scoped_session(session)
-            self.__session = Session()
+        Base.metadata.create_all(self.__engine)
+        session = sessionmaker(bind=self.__engine,
+                                expire_on_commit=False)
+        Session = scoped_session(session)
+        self.__session = Session()
 
     def close(self):
         """ closes the current session """
