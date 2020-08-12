@@ -17,6 +17,7 @@ class FileStorage:
             for key, value in FileStorage.__objects.items():
                 if type(value) == cls:
                     dictinonary_cls[key] = value
+                    print("i am value -------", value, "-------\n")
             return dictinonary_cls
 
     def new(self, obj):
