@@ -33,10 +33,28 @@ class DBStorage:
             Base.metadata.drop_all(bind=self.__engine)
 
     def all(self, cls=None):
-        """  must return a dictionary: (like FileStorage)
-            all elements in database """
-        database_dic = {}
+        if not self.__session:
+            self.reload()
+        objects = {}
+        if type(cls) == str:
+            cls = name2class.get(cls, None)
         if cls:
+            for obj in self.__session.query(cls):
+                objects[obj.__class__.__name__ + '.' + obj.id] = obj
+        else:
+            for cls in name2class.values():
+                for obj in self.__session.query(cls):
+                    objects[obj.__class__.__name__ + '.' + obj.id] = obj
+        return objects
+        
+    """
+    def all(self, cls=None):
+          must return a dictionary: (like FileStorage)
+            all elements in database 
+        if not self.__session:
+            self.reload()
+        database_dic = {}
+        if type(cls):
             objects = self.__session.query(cls).all()
             for objs in objects:
                 key = "{}.{}".format(type(objs).__name__, objs.id)
@@ -47,7 +65,7 @@ class DBStorage:
                                              Place, Review, Amenity).all():
                 key = "{}.{}".format(type(objs).__name__, objs.id)
                 database_dic[key] = objs
-        return database_dic
+        return database_dic"""
             
     def new(self, obj):
         """ adds the object to the current database session """
