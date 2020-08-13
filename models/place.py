@@ -7,6 +7,21 @@ import sqlalchemy
 from sqlalchemy import Column, String, Integer, Float, Table, ForeignKey
 from sqlalchemy.orm import relationship
 
+
+class Place(BaseModel):
+    """ A place to stay """
+    city_id = ""
+    user_id = ""
+    name = ""
+    description = ""
+    number_rooms = 0
+    number_bathrooms = 0
+    max_guest = 0
+    price_by_night = 0
+    latitude = 0.0
+    longitude = 0.0
+    amenity_ids = []
+"""
 if getenv('HBNB_TYPE_STORAGE') == 'db':
     place_amenity = Table('place_amenity', Base.metadata,
                           Column('place_id',
@@ -22,7 +37,7 @@ if getenv('HBNB_TYPE_STORAGE') == 'db':
 
 
 class Place(BaseModel, Base):
-    """Representation of Place """
+    Representation of Place 
     if getenv('HBNB_TYPE_STORAGE') == 'db':
         __tablename__ = 'places'
         city_id = Column(String(60),
@@ -69,12 +84,12 @@ class Place(BaseModel, Base):
         amenity_ids = []
 
     def __init__(self, *args, **kwargs):
-        """initializes Place"""
+        initializes Place
         super().__init__(*args, **kwargs)
 
     @property
     def reviews(self):
-        """attribute that returns list of Review instances"""
+        attribute that returns list of Review instances
         values_review = models.storage.all("Review").values()
         list_review = []
         for review in values_review:
@@ -85,10 +100,11 @@ class Place(BaseModel, Base):
     if getenv('HBNB_TYPE_STORAGE') != 'db':
         @property
         def amenities(self):
-            """attribute that returns list of Amenity instances"""
+            attribute that returns list of Amenity instances
             values_amenity = models.storage.all("Amenity").values()
             list_amenity = []
             for amenity in values_amenity:
                 if amenity.place_id == self.id:
                     list_amenity.append(amenity)
             return list_amenity
+"""

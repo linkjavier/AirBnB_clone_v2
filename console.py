@@ -11,7 +11,7 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
-
+import shlex
 
 class HBNBCommand(cmd.Cmd):
     """ Contains the functionality for the HBNB console"""
@@ -140,8 +140,8 @@ class HBNBCommand(cmd.Cmd):
                 int(value)
             except ValueError:
                 pass
-           
         new_instance.save()
+        storage.save()   
         print(new_instance.id)
         #----
             
@@ -217,24 +217,24 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the destroy command """
         print("Destroys an individual instance of a class")
         print("[Usage]: destroy <className> <objectId>\n")
-
+    """
     def do_all(self, arg):
         args = shlex.split(arg)
         obj_list = []
         if len(args) == 0:
             for value in models.storage.all().values():
                 obj_list.append(str(value))
-        elif args[0] in classes:
-            for key in models.storage.all():
+        elif args[0] in HBNBCommand.classes:
+            for key in storage.all().items():
                 if key.startswith(args[0]):
                     obj_list.append(str(models.storage.all()[key]))
         else:
             print("** class doesn't exist **")
             return False
         print(obj_list)
-
-    """def do_all(self, args):
-         Shows all objects, or all objects of a class
+    """
+    def do_all(self, args):
+        """ Shows all objects, or all objects of a class"""
         print_list = []
 
         if args:
@@ -242,17 +242,16 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
-                if k.split('.')[0] == args:
-                    print_list.append(str(v))
+            for k, v in storage.all(HBNBCommand.classes[args]).items():
+                print_list.append(str(v))
         else:
-            for k, v in storage._FileStorage__objects.items():
+            for k, v in storage.all().items():
                 print_list.append(str(v))
 
-        print(print_list)"""
-
+        print(print_list)
+    
     def help_all(self):
-        """ Help information for the all command """
+        """Help information for the all command """
         print("Shows all objects, or all of a class")
         print("[Usage]: all <className>\n")
 

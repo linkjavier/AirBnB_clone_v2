@@ -7,8 +7,16 @@ from os import getenv
 from sqlalchemy import Column, String
 
 
+class User(BaseModel):
+    """This class defines a user by various attributes"""
+    email = ''
+    password = ''
+    first_name = ''
+    last_name = ''
+
+"""
 class User(BaseModel, Base):
-    """Database"""
+    Database
     if getenv('HBNB_TYPE_STORAGE') == 'db':
         __tablename__ = 'users'
         email = Column(String(128), nullable=False)
@@ -22,12 +30,13 @@ class User(BaseModel, Base):
                                backref="user",
                                cascade="all, delete-orphan")
     else:
-        """This class defines a user by various attributes"""
+        This class defines a user by various attributes
         email = ''
         password = ''
         first_name = ''
         last_name = ''
 
     def __init__(self, *args, **kwargs):
-        """initializes user"""
+        initializes user
         super().__init__(*args, **kwargs)
+"""
