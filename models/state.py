@@ -28,7 +28,7 @@ class State(BaseModel, Base):
             return citylist
     
     else:
-        cities = relationship("City", backref="states",
+        cities_a = relationship("City", backref="states_a",
                               cascade="all, delete-orphan")
     
     

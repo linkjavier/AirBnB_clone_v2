@@ -48,7 +48,7 @@ class DBStorage:
             return new_dict
     """
     def all(self, cls=None):
-         """must return a dictionary: (like FileStorage)
+        """must return a dictionary: (like FileStorage)
             all elements in database"""
         if not self.__session:
             self.reload()
