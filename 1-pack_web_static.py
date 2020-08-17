@@ -13,7 +13,7 @@ def do_pack():
         with actual date on name.
     """
     now = datetime.utcnow().strftime('%Y%m%d%H%M%S')
-    filename = "version/web_static_{}.tgz".format(now)
+    filename = "versions/web_static_{}.tgz".format(now)
     try:
         local("mkdir -p ./versions")
         local("tar --create --verbose -z --file={} ./web_static"
