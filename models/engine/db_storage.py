@@ -25,48 +25,47 @@ class DBStorage:
         password = os.getenv("HBNB_MYSQL_PWD")
         host = os.getenv("HBNB_MYSQL_HOST")
         db = os.getenv("HBNB_MYSQL_DB")
-        self.__engine = create_engine("mysql+mysqldb://{}:{}@{}/{}"
+        DBStorage.__engine = create_engine("mysql+mysqldb://{}:{}@{}/{}"
                                       .format(user, password, host, db),
                                       pool_pre_ping=True)
-        Base.metadata.create_all(self.__engine)
+        #Base.metadata.create_all(self.__engine)
         if os.getenv("HBNB_ENV") == "test":
-            Base.metadata.drop_all(bind=self.__engine)
-
-    def all(self, cls=None):
-        if not self.__session:
-            self.reload()
-        objects = {}
-        if type(cls) == str:
-            cls = name2class.get(cls, None)
-        if cls:
-            for obj in self.__session.query(cls):
-                objects[obj.__class__.__name__ + '.' + obj.id] = obj
-        else:
-            for cls in name2class.values():
-                for obj in self.__session.query(cls):
-                    objects[obj.__class__.__name__ + '.' + obj.id] = obj
-        return objects
-        
+            Base.metadata.drop_all(self.__engine)
     """
     def all(self, cls=None):
-          must return a dictionary: (like FileStorage)
-            all elements in database 
+        Returns a dictionary of models currently in db_storage
+        new_dict = {}
+        if cls is None:
+            new_query = DBStorage.__session.query(User, State, City,
+                                                  Amenity, Place, Review).all()
+            for obj in new_query:
+                new_dict[obj.to_dict()['__class__'] + '.' + obj.id] = obj
+            return new_dict
+        else:
+            new_query = DBStorage.__session.query(cls).all()
+            for obj in new_query:
+                new_dict[obj.to_dict()['__class__'] + '.' + obj.id] = obj
+            return new_dict
+    """
+    def all(self, cls=None):
+        """must return a dictionary: (like FileStorage)
+            all elements in database"""
         if not self.__session:
             self.reload()
         database_dic = {}
-        if type(cls):
-            objects = self.__session.query(cls).all()
+        if cls is not None:
+            objects = DBStorage.__session.query(cls).all()
             for objs in objects:
-                key = "{}.{}".format(type(objs).__name__, objs.id)
+                key = "{}.{}".format(type(objs).__class__.__name__, objs.id)
                 database_dic[key] = objs
-       
+            return database_dic
         else:
-            for objs in self.__session.query(City, State, User,\
+            for objs in DBStorage.__session.query(City, State, User,\
                                              Place, Review, Amenity).all():
-                key = "{}.{}".format(type(objs).__name__, objs.id)
+                key = "{}.{}".format(type(objs).__class__.__name__, objs.id)
                 database_dic[key] = objs
-        return database_dic"""
-            
+            return database_dic
+           
     def new(self, obj):
         """ adds the object to the current database session """
         self.__session.add(obj)
@@ -77,9 +76,9 @@ class DBStorage:
 
     def delete(self, obj=None):
         """delete from the current database session obj if not None"""
-        if obj is not None:
+        if obj:
             self.__session.delete(obj)
-            self.save()
+            #self.save()
 
     def reload(self):
         """ * create all tables in the database (feature\
@@ -93,14 +92,12 @@ class DBStorage:
             must be set to False ; and scoped_session - \
             to make sure your Session is thread-safe"""
 
-        Base.metadata.create_all(self.__engine)
-        session = sessionmaker(bind=self.__engine,
+        Base.metadata.create_all(DBStorage.__engine)
+        session = sessionmaker(bind=DBStorage.__engine,
                                 expire_on_commit=False)
         Session = scoped_session(session)
-        self.__session = Session()
+        DBStorage.__session = Session()
 
-    def close(self):
-        """ closes the current session """
-        self.__session.close()
+    
 
 
